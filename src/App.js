@@ -16,7 +16,6 @@ function App() {
   const [showUploadedImage, setShowUploadedImage] = useState(false);
   const [showCreateGifButton, setShowCreateGifButton] = useState(false);
   const [showGif, setShowGif] = useState(false);
-  const [sunglassesPosition, setSunglassesPosition] = useState({ x: 0, y: 0 });
 
   const handleImageUpload = (event) => {
     const reader = new FileReader();
@@ -35,46 +34,58 @@ function App() {
     setShowGif(false);
   };
 
-  const updateSunglassesPosition = (newPosition) => {
-    setSunglassesPosition(newPosition);
+  const drawGifFrame = (image, sunglasses, sunglassesX, sunglassesY) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(image, 0, 0, image.width, image.height);
+    ctx.drawImage(
+      sunglasses,
+      sunglassesX,
+      sunglassesY,
+      sunglasses.width,
+      sunglasses.height
+    );
+    return canvas.toDataURL("image/png");
   };
 
   const handleGifCreation = () => {
     const image = imageRef.current;
     const sunglasses = sunglassesRef.current;
-    console.log(
-      `top: ${sunglasses.offsetTop}, left: ${sunglasses.offsetLeft}, width: ${sunglasses.offsetWidth}, height: ${sunglasses.offsetHeight}`
-    );
+    const imageRect = image.getBoundingClientRect();
+    const sunglassesRect = sunglasses.getBoundingClientRect();
 
     const images = [];
 
     // draw gif frame by frame
     for (
-      let i = -sunglasses.offsetHeight;
-      i <= sunglasses.offsetTop / 1.3;
+      let i = -sunglasses.height;
+      i <= sunglassesRect.top - imageRect.top;
       i += 2
     ) {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(sunglasses, -10, i, 256, 20);
-      images.push(canvas.toDataURL("image/png"));
+      images.push(
+        drawGifFrame(image, sunglasses, sunglassesRect.left - imageRect.left, i)
+      );
     }
 
     // add 10 more frames at the end
     for (let i = 0; i < 10; i++) {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(sunglasses, -10, sunglasses.offsetTop / 1.3, 256, 20);
-      images.push(canvas.toDataURL("image/png"));
+      images.push(
+        drawGifFrame(
+          image,
+          sunglasses,
+          sunglassesRect.left - imageRect.left,
+          sunglassesRect.top - imageRect.top
+        )
+      );
     }
 
     gifshot.createGIF(
       {
         images: images,
-        gifWidth: image.offsetWidth,
-        gifHeight: image.offsetHeight,
+        gifWidth: image.width,
+        gifHeight: image.height,
         numFrames: 5,
         numWorkders: 5,
         frameDuration: 0.01,
@@ -100,15 +111,7 @@ function App() {
         {showUploadedImage && (
           <div style={{ position: "relative", width: "100%", height: "100%" }}>
             <UploadedImage ref={imageRef} src={imageSrc} width={imageWidth} />
-            <Sunglasses
-              ref={sunglassesRef}
-              width={imageWidth}
-              updatePosition={updateSunglassesPosition}
-            />
-            <div>
-              Current sunglasses position: {sunglassesPosition.x},{" "}
-              {sunglassesPosition.y}
-            </div>
+            <Sunglasses ref={sunglassesRef} width={imageWidth / 2} />
           </div>
         )}
       </div>

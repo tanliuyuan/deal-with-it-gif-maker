@@ -1,20 +1,9 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef } from "react";
 import Draggable from "react-draggable";
 
 const Sunglasses = forwardRef((props, ref) => {
-  const [deltaPosition, setDeltaPosition] = useState({ x: 0, y: 0 });
-
-  const handleDrag = (event, data) => {
-    const { x, y } = deltaPosition;
-    setDeltaPosition({
-      x: x + data.deltaX,
-      y: y + data.deltaY,
-    });
-    props.updatePosition(deltaPosition);
-  };
-
   return (
-    <Draggable bounds="parent" onDrag={handleDrag} onStop={handleDrag}>
+    <Draggable bounds="parent">
       <img
         alt="Sunglasses"
         className="img-fluid"
