@@ -34,7 +34,14 @@ function App() {
     setShowGif(false);
   };
 
-  const drawGifFrame = (image, sunglasses, sunglassesX, sunglassesY) => {
+  const drawGifFrame = (
+    image,
+    sunglasses,
+    sunglassesX,
+    sunglassesY,
+    sunglassesWidth,
+    sunglassesHeight
+  ) => {
     const canvas = document.createElement("canvas");
     canvas.width = image.width;
     canvas.height = image.height;
@@ -44,8 +51,8 @@ function App() {
       sunglasses,
       sunglassesX,
       sunglassesY,
-      sunglasses.width,
-      sunglasses.height
+      sunglassesWidth,
+      sunglassesHeight
     );
     return canvas.toDataURL("image/png");
   };
@@ -55,6 +62,7 @@ function App() {
     const sunglasses = sunglassesRef.current;
     const imageRect = image.getBoundingClientRect();
     const sunglassesRect = sunglasses.getBoundingClientRect();
+    console.log(sunglassesRect);
 
     const images = [];
 
@@ -65,7 +73,14 @@ function App() {
       i += 2
     ) {
       images.push(
-        drawGifFrame(image, sunglasses, sunglassesRect.left - imageRect.left, i)
+        drawGifFrame(
+          image,
+          sunglasses,
+          sunglassesRect.left - imageRect.left,
+          i,
+          sunglassesRect.width,
+          sunglassesRect.height
+        )
       );
     }
 
@@ -76,7 +91,9 @@ function App() {
           image,
           sunglasses,
           sunglassesRect.left - imageRect.left,
-          sunglassesRect.top - imageRect.top
+          sunglassesRect.top - imageRect.top,
+          sunglassesRect.width,
+          sunglassesRect.height
         )
       );
     }
