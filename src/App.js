@@ -46,6 +46,8 @@ function App() {
     canvas.width = image.width;
     canvas.height = image.height;
     const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(image, 0, 0, image.width, image.height);
     ctx.drawImage(
       sunglasses,
